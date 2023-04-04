@@ -2,32 +2,36 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { Image } from "react-native";
 import { useState } from "react";
-import { images } from "../my-app/global-images/global";
+import { images } from "./global-images/global";
 
 export default function App() {
   const [randomNumber, setRandomNumber] = useState(0);
-  const [playerOneScore, setPlayerOneScore] = useState(0);
   const [playingState, setPlayingState] = useState(true);
   const [scores, setScores] = useState({ player1: 0, player2: 0 });
   const [playerToPlay, setPlayerToPlay] = useState("player1");
 
+  const changePlayer = () => {
+    setPlayerToPlay(playerToPlay === "player1" ? "player2" : "player1");
+  };
+
   const diceFunction = () => {
-    setRandomNumber(Math.trunc(Math.random() * 6) + 1);
-    if (randomNumber != 1) {
-      setPlayerOneScore((prev) => ({
-        ...prev,
-        [playerToPlay]: playerOneScore + randomNumber,
+    const dice = Math.trunc(Math.random() * 6) + 1;
+    setRandomNumber(dice);
+    if (dice !== 1) {
+      setScores((prev) => ({
+        ...prev, // ...{ player1: 0, player2: 0 }
+        // player1: 0,
+        // player2: 0,
+        [playerToPlay]: prev[playerToPlay] + dice, // player1: 5,
       }));
     } else {
-      setPlayerOneScore((prev) => ({ ...prev, [playerToPlay]: 0 }));
-      setPlayerToPlay(playerToPlay === "player1" ? "player2" : "player1");
+      setScores((prev) => ({ ...prev, [playerToPlay]: 0 }));
+      changePlayer();
     }
   };
 
   const startNewGame = () => {
     setPlayingState(false);
-    setPlayerOneScore(0);
-    setPlayerTwoScore(0);
   };
 
   return (
@@ -43,10 +47,12 @@ export default function App() {
       ) : (
         <>
           <Text style={{ color: "white" }}>Hello world</Text>
+          <Text>{scores.player1}</Text>
           <Button
             title={"Press me to generate random number"}
             onPress={diceFunction}
-          ></Button>
+          />
+          <Button title={"Hold"} onPress={() => changePlayer()} />
           <View style={styles.imageContainer}>
             <Image
               style={styles.dices}
@@ -54,7 +60,7 @@ export default function App() {
             ></Image>
           </View>
           <View style={{ flexDirection: "row", gap: 20 }}>
-            <Text></Text>
+            <Text>{scores.player2}</Text>
           </View>
         </>
       )}
