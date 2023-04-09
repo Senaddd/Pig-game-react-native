@@ -7,11 +7,11 @@ import { images } from "./global-images/global";
 export default function App() {
   const [randomNumber, setRandomNumber] = useState(0);
   const [playingState, setPlayingState] = useState(true);
-  const [scores, setScores] = useState({ player1: 0, player2: 0 });
-  const [playerToPlay, setPlayerToPlay] = useState("player1");
+  const [scores, setScores] = useState({ PlayerOne: 0, PlayerTwo: 0 });
+  const [playerToPlay, setPlayerToPlay] = useState("PlayerOne");
 
   const changePlayer = () => {
-    setPlayerToPlay(playerToPlay === "player1" ? "player2" : "player1");
+    setPlayerToPlay(playerToPlay === "PlayerOne" ? "PlayerTwo" : "PlayerOne");
   };
 
   const diceFunction = () => {
@@ -24,6 +24,9 @@ export default function App() {
         // player2: 0,
         [playerToPlay]: prev[playerToPlay] + dice, // player1: 5,
       }));
+      if (scores.PlayerOne >= 100 || scores.PlayerTwo >= 100) {
+        setPlayingState(true);
+      }
     } else {
       setScores((prev) => ({ ...prev, [playerToPlay]: 0 }));
       changePlayer();
@@ -32,13 +35,14 @@ export default function App() {
 
   const startNewGame = () => {
     setPlayingState(false);
+    setScores({ PlayerOne: 0, PlayerTwo: 0 });
   };
 
   return (
     <View style={styles.container}>
       {playingState ? (
         <>
-          <Text>Someone won the game</Text>
+          <Text>{playerToPlay} won the game</Text>
           <Button
             title="Press me to start a new game"
             onPress={startNewGame}
@@ -46,8 +50,6 @@ export default function App() {
         </>
       ) : (
         <>
-          <Text style={{ color: "white" }}>Hello world</Text>
-          <Text>{scores.player1}</Text>
           <Button
             title={"Press me to generate random number"}
             onPress={diceFunction}
@@ -55,12 +57,14 @@ export default function App() {
           <Button title={"Hold"} onPress={() => changePlayer()} />
           <View style={styles.imageContainer}>
             <Image
-              style={styles.dices}
+              style={styles.dice}
               source={images.diceRollNumber[randomNumber]}
             ></Image>
           </View>
           <View style={{ flexDirection: "row", gap: 20 }}>
-            <Text>{scores.player2}</Text>
+            <Text>{scores.PlayerOne}</Text>
+
+            <Text>{scores.PlayerTwo}</Text>
           </View>
         </>
       )}
@@ -73,7 +77,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "purple",
+    backgroundColor: "#747474",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -82,7 +86,7 @@ const styles = StyleSheet.create({
     gap: 50,
     padding: 50,
   },
-  dices: {
+  dice: {
     height: 90,
     width: 80,
   },
